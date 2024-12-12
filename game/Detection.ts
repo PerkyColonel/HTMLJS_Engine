@@ -23,8 +23,21 @@ export class HitBox extends CollidableObject {
 		super(game, position, rotation, scale);
 	}
 
+	// AABB Detection
 	public GetDetection(other: CollidableObject) {
 		let T = this.GetSides();
 		let O = other.GetSides();
+
+		let otherToLeft = T.LeftSide < O.RightSide;
+		let otherToRight = T.RightSide < O.LeftSide;
+		let otherToTop = T.TopSide > O.BotSide;
+		let otherToBot = T.BotSide < O.TopSide;
+
+		if (otherToLeft && otherToRight && otherToTop && otherToBot) {
+			this.IsColliding = true;
+			return true;
+		}
+		this.IsColliding = false;
+		return false;
 	}
 }

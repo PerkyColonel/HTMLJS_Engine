@@ -81,6 +81,7 @@ export class CollidableObject extends VisibleObject {
 	HasCollision: boolean;
 	IsMovable: boolean;
 	Weight: number;
+	IsColliding: Boolean;
 
 	CollideWith: (obj: CollidableObject) => void;
 	AddToCollObjects: () => void;
