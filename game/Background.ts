@@ -10,9 +10,9 @@ export class Background extends VisibleObject {
   ) {
     super(game, { X: 0, Y: 0, Z: 0 }, 0, { X: 0, Y: 0 });
     this.Html = {
-      parent: "canvas",
-      id: "background",
-      element: "div",
+      Parent: "canvas",
+      Id: "background",
+      Element: "div",
     };
     this.Sprite = data?.sprite;
 
