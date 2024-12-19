@@ -38,38 +38,66 @@ export class GameObject {
 		this.Scale = scale;
 	}
 	public AddToObjects() {
-		this.Game.Objects.add(this);
+		Game.Objects.add(this);
 	}
 	public DeleteObject() {
-		this.Game.Objects.delete(this);
+		Game.Objects.delete(this);
 	}
+
+	public Update() {}
+	public Render() {}
 }
 
 export class VisibleObject extends GameObject {
 	Html: {
-		parent: string;
-		id: string;
-		element?: string;
+		Parent: string;
+		Id: string;
+		Element?: string;
 		ClassList?: Array<string>;
 	};
 
 	Sprite?: string;
 
 	SetSprite: (url: string) => void;
-	AddClass: (css: string) => void;
+	AddClass(css: string) {
+		if (!this.Html.ClassList) {
+			this.Html.ClassList = [];
+		}
+
+		if (this.Html.ClassList.includes(css)) {
+			return;
+		}
+
+		if (this.Html.Id == undefined) {
+			this.Html.Id = "id" + Math.random().toString(36);
+		}
+		this.Html.ClassList.push(css);
+	}
 	RemoveClass: (css: string) => void;
 
 	public RenderElement() {
-		let RenderElement = document.createElement(this.Html.element ?? "div");
-		RenderElement.setAttribute("id", this.Html.id);
+		let RenderElement = document.createElement(this.Html.Element ?? "div");
+		RenderElement.setAttribute("id", this.Html.Id);
 		RenderElement.className = this.Html.ClassList?.join(" ") ?? "empty";
-		document.getElementById(this.Html.parent)?.appendChild(RenderElement);
+
+		document.getElementById(this.Html.Parent)?.appendChild(RenderElement);
+	}
+
+	public Render() {
+		let RenderElement = document.getElementById(this.Html.Id);
+		if (RenderElement == null) {
+			return;
+		}
+		RenderElement.style.transform = `translate(${this.Position.X}px, ${this.Position.Y}px)`;
+		RenderElement.style.width = this.Scale.X + "px";
+		RenderElement.style.height = this.Scale.Y + "px";
 	}
 	DeleteObject: () => void;
 }
 
 export interface MovableObject extends VisibleObject {
 	IsMoving: boolean;
+	MoveSpeed: number;
 	Velocity: {
 		X: number;
 		Y: number;
@@ -84,7 +112,10 @@ export class CollidableObject extends VisibleObject {
 	IsColliding: Boolean = false;
 
 	CollideWith: (obj: CollidableObject) => void;
-	AddToCollObjects: () => void;
+
+	AddToCollObjects() {
+		Game.CollidableObjects.add(this);
+	}
 
 	public GetSides() {
 		let leftSide = this.Position.X;
@@ -103,6 +134,7 @@ export class CollidableObject extends VisibleObject {
 
 export class Entity extends CollidableObject implements MovableObject {
 	IsMoving: boolean;
+	MoveSpeed: number;
 	Velocity: {
 		X: number;
 		Y: number;
@@ -125,7 +157,46 @@ export class Entity extends CollidableObject implements MovableObject {
 		}
 	) {
 		super(game, position, rotation, scale);
+		this.IsMoving = false;
+		this.IsMovable = true;
+		this.Weight = 10;
+
+		this.Scale = scale;
+
+		this.Velocity = {
+			X: 0,
+			Y: 0,
+		};
+
+		this.Setup();
 	}
 
-	public UpdatePosition: (delta: number) => void;
+	public Setup() {
+		this.SetupHtml(this.Html);
+		this.RenderElement();
+		this.AddToObjects();
+		this.AddToCollObjects();
+	}
+
+	public SetupHtml(
+		data: {
+			Parent: string;
+			Id: string;
+			Element?: string;
+			ClassList?: Array<string>;
+		} | null
+	) {
+		this.Html = {
+			Parent: "canvas",
+			Id: Math.random().toString(36).substring(7),
+			Element: "div",
+			ClassList: ["entity"],
+		};
+		this.Html.Parent = data?.Parent ?? "canvas";
+		this.Html.Id = data?.Id ?? Math.random().toString(36).substring(7);
+		this.Html.Element = data?.Element ?? "div";
+		this.Html.ClassList = data?.ClassList ?? ["entity"];
+	}
+
+	public UpdatePosition(delta: number) {}
 }
