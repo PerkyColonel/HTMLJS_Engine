@@ -111,7 +111,7 @@ export class CollidableObject extends VisibleObject {
 	Weight: number;
 	IsColliding: Boolean = false;
 
-	CollideWith: (obj: CollidableObject) => void;
+	// CollideWith: (obj: CollidableObject) => void;
 
 	AddToCollObjects() {
 		Game.CollidableObjects.add(this);
@@ -129,6 +129,35 @@ export class CollidableObject extends VisibleObject {
 			TopSide: topSide,
 			BotSide: botSide,
 		};
+	}
+
+	public CollideWith(obj: CollidableObject) {
+		console.log("Colliding with object" + obj);
+
+		if (this.HasCollision)
+		{
+			
+		}
+	}
+
+	public HandleCollision() {
+		for (let object of Game.CollidableObjects) {
+			if (object == this) {
+				continue;
+			}
+
+			let sides = this.GetSides();
+			let objectSides = object.GetSides();
+
+			if (
+				sides.LeftSide < objectSides.RightSide &&
+				sides.RightSide > objectSides.LeftSide &&
+				sides.TopSide < objectSides.BotSide &&
+				sides.BotSide > objectSides.TopSide
+			) {
+				this.CollideWith(object);
+			}
+		}
 	}
 }
 
@@ -154,12 +183,14 @@ export class Entity extends CollidableObject implements MovableObject {
 		scale: {
 			X: number;
 			Y: number;
-		}
+		},
+
+		weight: number
 	) {
 		super(game, position, rotation, scale);
 		this.IsMoving = false;
 		this.IsMovable = true;
-		this.Weight = 10;
+		this.Weight = weight;
 
 		this.Scale = scale;
 

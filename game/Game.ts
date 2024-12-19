@@ -7,6 +7,7 @@ export class Game {
 
 	static Objects: Set<GameObject> = new Set();
 	static CollidableObjects: Set<CollidableObject> = new Set();
+	static Inputs: Set<string> = new Set();
 
 	static Time: number = 0;
 
@@ -26,12 +27,17 @@ export class Game {
 		for (let object of Game.Objects) {
 			object.Update();
 			object.Render();
+
+			if (object instanceof CollidableObject) {
+				object as CollidableObject;
+				object.HandleCollision();
+			}
 		}
 	}
 
-	static MainLoop() {
+	static async MainLoop() {
 		if (Game.STATE == "PLAYING") {
-			Game.Update();
+			await Game.Update();
 		}
 		if (Game.Time > Game.UPDATE_RATE) {
 			Game.Time = 0;
@@ -42,6 +48,17 @@ export class Game {
 	static Start() {
 		Game.MainLoop();
 		Game.KeepTime();
+		Game.SetupInputs();
+	}
+
+	static SetupInputs() {
+		document.addEventListener("keydown", (e) => {
+			Game.Inputs.add(e.key);
+		});
+
+		document.addEventListener("keyup", (e) => {
+			Game.Inputs.delete(e.key);
+		});
 	}
 
 	static Pauze() {
