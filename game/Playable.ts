@@ -2,7 +2,12 @@ import { Game } from "./Game";
 import { Entity } from "./GameObject";
 
 export class Playable extends Entity {
-	Inputs: Set<string>;
+	InputMap: {
+		Up: string;
+		Down: string;
+		Left: string;
+		Right: string;
+	};
 
 	MoveSpeed = 5;
 	IsMoving: boolean;
@@ -25,16 +30,37 @@ export class Playable extends Entity {
 		scale: {
 			X: number;
 			Y: number;
-		}
-	) {
-		super(game, position, rotation, scale);
+		},
 
-		this.Html = {
+		InputMap: {
+			Up: string;
+			Down: string;
+			Left: string;
+			Right: string;
+		} = {
+			Up: "w",
+			Down: "s",
+			Left: "a",
+			Right: "d",
+		},
+
+		Html: {
+			Parent: string;
+			Id: string;
+			Element: string;
+			ClassList: Array<string>;
+		} = {
 			Parent: "canvas",
 			Id: "player",
 			Element: "div",
 			ClassList: ["player"],
-		};
+		}
+	) {
+		super(game, position, rotation, scale, 10);
+
+		this.Html = Html;
+
+		this.InputMap = InputMap;
 
 		this.Setup();
 	}
@@ -42,17 +68,12 @@ export class Playable extends Entity {
 	public Setup() {
 		super.Setup();
 
-		this.IsMoving = false;
-		this.IsMovable = true;
-		this.Weight = 10;
-		this.Inputs = new Set();
+		Game.Inputs;
 
 		this.Scale = {
 			X: 40,
 			Y: 40,
 		};
-
-		this.SetupInputs();
 	}
 
 	public SetupHtml(
@@ -76,17 +97,17 @@ export class Playable extends Entity {
 	}
 
 	public HandleInputs() {
-		if (this.Inputs.has("w")) {
+		if (Game.Inputs.has(this.InputMap.Up)) {
 			this.Velocity.Y = -1;
-		} else if (this.Inputs.has("s")) {
+		} else if (Game.Inputs.has(this.InputMap.Down)) {
 			this.Velocity.Y = 1;
 		} else {
 			this.Velocity.Y = 0;
 		}
 
-		if (this.Inputs.has("a")) {
+		if (Game.Inputs.has(this.InputMap.Left)) {
 			this.Velocity.X = -1;
-		} else if (this.Inputs.has("d")) {
+		} else if (Game.Inputs.has(this.InputMap.Right)) {
 			this.Velocity.X = 1;
 		} else {
 			this.Velocity.X = 0;
@@ -96,15 +117,5 @@ export class Playable extends Entity {
 	public UpdatePosition(delta: number) {
 		this.Position.X += this.Velocity.X * this.MoveSpeed;
 		this.Position.Y += this.Velocity.Y * this.MoveSpeed;
-	}
-
-	public SetupInputs() {
-		document.addEventListener("keydown", (e) => {
-			this.Inputs.add(e.key);
-		});
-
-		document.addEventListener("keyup", (e) => {
-			this.Inputs.delete(e.key);
-		});
 	}
 }
