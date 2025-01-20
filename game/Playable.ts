@@ -70,10 +70,6 @@ export class Playable extends Entity {
 
 		Game.Inputs;
 
-		this.Scale = {
-			X: 40,
-			Y: 40,
-		};
 	}
 
 	public SetupHtml(
@@ -84,6 +80,7 @@ export class Playable extends Entity {
 			ClassList?: Array<string>;
 		} | null
 	): void {
+		console.log("seupthtml", this);
 		if (data) {
 			this.Html = data;
 		}

@@ -56,9 +56,17 @@ export class VisibleObject extends GameObject {
 		ClassList?: Array<string>;
 	};
 
+	RenderedHtml?: HTMLElement
+
 	Sprite?: string;
 
-	SetSprite: (url: string) => void;
+	SetSprite (spriteUrl: {url: string, offset: {x: number, y: number}})
+	{
+		console.log("setSprite ", this);
+		this.Sprite = `no-repeat url(${spriteUrl.url}) ${spriteUrl.offset.x} ${spriteUrl.offset.y}`;
+		// this.Sprite = `no-repeat url(${spriteUrl.url})`;
+
+	}
 	AddClass(css: string) {
 		if (!this.Html.ClassList) {
 			this.Html.ClassList = [];
@@ -79,18 +87,29 @@ export class VisibleObject extends GameObject {
 		let RenderElement = document.createElement(this.Html.Element ?? "div");
 		RenderElement.setAttribute("id", this.Html.Id);
 		RenderElement.className = this.Html.ClassList?.join(" ") ?? "empty";
-
 		document.getElementById(this.Html.Parent)?.appendChild(RenderElement);
+		this.RenderedHtml = RenderElement
 	}
 
 	public Render() {
-		let RenderElement = document.getElementById(this.Html.Id);
-		if (RenderElement == null) {
+		console.log("render ", this);
+
+
+		
+		if (this.RenderedHtml == null) {
+			console.log("stopRENDER")
 			return;
 		}
-		RenderElement.style.transform = `translate(${this.Position.X}px, ${this.Position.Y}px)`;
-		RenderElement.style.width = this.Scale.X + "px";
-		RenderElement.style.height = this.Scale.Y + "px";
+		this.RenderedHtml.style.transform = `translate(${this.Position.X}px, ${this.Position.Y}px)`;
+		this.RenderedHtml.style.width = this.Scale.X + "px";
+		this.RenderedHtml.style.height = this.Scale.Y + "px";
+		if (this.Sprite)
+		{
+			console.log("SPRITE: ", this.Sprite)
+
+			this.RenderedHtml.style.background = this.Sprite;
+			this.RenderedHtml.style.backgroundSize = 'cover';
+		}
 	}
 	DeleteObject: () => void;
 }

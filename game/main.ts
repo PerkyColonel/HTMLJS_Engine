@@ -1,11 +1,15 @@
 import { Background } from "./Background";
 import { Game } from "./Game";
 import { Playable } from "./Playable";
+import { Player } from "./Player";
+
 
 const game: Game = new Game();
 
 new Background(game);
-new Playable(game, { X: 0, Y: 100, Z: 0 }, 0, { X: 10, Y: 10 });
+let Player1 = new Player(game, { X: 0, Y: 100, Z: 0 }, 0, { X: 1000, Y: 1000 }, "knight");
+
+
 new Playable(
 	game,
 	{ X: 1000, Y: 100, Z: 0 },
@@ -20,3 +24,4 @@ new Playable(
 	}
 );
 Game.Start();
+// setTimeout(Game.Pauze, 10)
