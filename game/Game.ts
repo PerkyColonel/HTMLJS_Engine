@@ -2,7 +2,7 @@ import { GameObject, CollidableObject, VisibleObject } from "./GameObject";
 
 export class Game {
 	static PIXEL_SIZE = 4;
-	static UPDATE_RATE = 1000 / 60;
+	static UPDATE_RATE = 60;
 	static STATE = "PLAYING";
 
 	static Objects: Set<GameObject> = new Set();
@@ -10,6 +10,7 @@ export class Game {
 	static Inputs: Set<string> = new Set();
 
 	static Time: number = 0;
+	static TimeRunning: number = 0;
 
 	static random(min: number, max: number) {
 		return Math.floor(Math.random() * (max - min + 1) + min);
@@ -37,9 +38,10 @@ export class Game {
 
 	static async MainLoop() {
 		if (Game.STATE == "PLAYING") {
+			Game.KeepTime()
 			await Game.Update();
 		}
-		if (Game.Time > Game.UPDATE_RATE) {
+		if (Game.Time >= Game.UPDATE_RATE) {
 			Game.Time = 0;
 		}
 		requestAnimationFrame(Game.MainLoop);
@@ -67,6 +69,6 @@ export class Game {
 
 	static KeepTime() {
 		Game.Time++;
-		setTimeout(Game.KeepTime, this.UPDATE_RATE);
+		Game.TimeRunning++;
 	}
 }
